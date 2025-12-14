@@ -7,7 +7,13 @@ import { OHLCVData, CandlestickPattern, FibonacciLevel } from '../models/stock.m
 import { STRATEGY_CONFIG } from '../config/api-config';
 
 export class TechnicalAnalysisService {
-  
+  // Candlestick pattern thresholds
+  private readonly HAMMER_BODY_RATIO = 0.3;
+  private readonly HAMMER_SHADOW_RATIO = 2.0;
+  private readonly HAMMER_UPPER_SHADOW_RATIO = 0.5;
+  private readonly STAR_BODY_RATIO = 0.5;
+  private readonly PATTERN_HIGH_CONFIDENCE = 0.8;
+
   /**
    * Calculate average volume over specified period
    */
@@ -101,9 +107,9 @@ export class TechnicalAnalysisService {
     const totalRange = candle.high - candle.low;
 
     return (
-      lowerShadow >= body * 2 &&
-      upperShadow <= body * 0.5 &&
-      body / totalRange < 0.3
+      lowerShadow >= body * this.HAMMER_SHADOW_RATIO &&
+      upperShadow <= body * this.HAMMER_UPPER_SHADOW_RATIO &&
+      body / totalRange < this.HAMMER_BODY_RATIO
     );
   }
 
@@ -120,9 +126,9 @@ export class TechnicalAnalysisService {
     const totalRange = candle.high - candle.low;
 
     return (
-      upperShadow >= body * 2 &&
-      lowerShadow <= body * 0.5 &&
-      body / totalRange < 0.3
+      upperShadow >= body * this.HAMMER_SHADOW_RATIO &&
+      lowerShadow <= body * this.HAMMER_UPPER_SHADOW_RATIO &&
+      body / totalRange < this.HAMMER_BODY_RATIO
     );
   }
 
@@ -169,7 +175,7 @@ export class TechnicalAnalysisService {
   private isMorningStar(current: OHLCVData, middle: OHLCVData, first: OHLCVData): boolean {
     const firstBearish = first.close < first.open;
     const currentBullish = current.close > current.open;
-    const middleSmall = Math.abs(middle.close - middle.open) < Math.abs(first.close - first.open) * 0.5;
+    const middleSmall = Math.abs(middle.close - middle.open) < Math.abs(first.close - first.open) * this.STAR_BODY_RATIO;
     // Gap down: middle's high is below first candle's close/open
     const gapDown = middle.high < Math.min(first.open, first.close);
     // Gap up: current's low is above middle's close/open
@@ -189,7 +195,7 @@ export class TechnicalAnalysisService {
   private isEveningStar(current: OHLCVData, middle: OHLCVData, first: OHLCVData): boolean {
     const firstBullish = first.close > first.open;
     const currentBearish = current.close < current.open;
-    const middleSmall = Math.abs(middle.close - middle.open) < Math.abs(first.close - first.open) * 0.5;
+    const middleSmall = Math.abs(middle.close - middle.open) < Math.abs(first.close - first.open) * this.STAR_BODY_RATIO;
     // Gap up: middle's low is above first candle's close/open
     const gapUp = middle.low > Math.max(first.open, first.close);
     // Gap down: current's high is below middle's close/open

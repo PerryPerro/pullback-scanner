@@ -19,6 +19,7 @@ import { TechnicalAnalysisService } from '../services/technical-analysis.service
 
 export class PullbackStrategy {
   private technicalAnalysis: TechnicalAnalysisService;
+  private readonly PATTERN_HIGH_CONFIDENCE = 0.8;
 
   constructor() {
     this.technicalAnalysis = new TechnicalAnalysisService();
@@ -209,7 +210,7 @@ export class PullbackStrategy {
     // Candlestick pattern detected
     if (patterns.length > 0) {
       const maxConfidence = Math.max(...patterns.map(p => p.confidence));
-      score += maxConfidence >= 0.8 ? 2 : 1;
+      score += maxConfidence >= this.PATTERN_HIGH_CONFIDENCE ? 2 : 1;
     }
 
     // Near Fibonacci level
