@@ -171,18 +171,14 @@ export class TechnicalAnalysisService {
    * - First candle: bearish
    * - Second candle: small body (star)
    * - Third candle: bullish, closes above midpoint of first candle
+   * Note: Using relaxed pattern recognition that doesn't strictly require gaps
    */
   private isMorningStar(current: OHLCVData, middle: OHLCVData, first: OHLCVData): boolean {
     const firstBearish = first.close < first.open;
     const currentBullish = current.close > current.open;
     const middleSmall = Math.abs(middle.close - middle.open) < Math.abs(first.close - first.open) * this.STAR_BODY_RATIO;
-    // Gap down: middle's high is below first candle's close/open
-    const gapDown = middle.high < Math.min(first.open, first.close);
-    // Gap up: current's low is above middle's close/open
-    const gapUp = current.low > Math.max(middle.open, middle.close);
     const currentClosesHigh = current.close > (first.open + first.close) / 2;
 
-    // Relaxed gap requirement - either gap down or gap up, or just small middle and closes high
     return firstBearish && currentBullish && middleSmall && currentClosesHigh;
   }
 
@@ -191,18 +187,14 @@ export class TechnicalAnalysisService {
    * - First candle: bullish
    * - Second candle: small body (star)
    * - Third candle: bearish, closes below midpoint of first candle
+   * Note: Using relaxed pattern recognition that doesn't strictly require gaps
    */
   private isEveningStar(current: OHLCVData, middle: OHLCVData, first: OHLCVData): boolean {
     const firstBullish = first.close > first.open;
     const currentBearish = current.close < current.open;
     const middleSmall = Math.abs(middle.close - middle.open) < Math.abs(first.close - first.open) * this.STAR_BODY_RATIO;
-    // Gap up: middle's low is above first candle's close/open
-    const gapUp = middle.low > Math.max(first.open, first.close);
-    // Gap down: current's high is below middle's close/open
-    const gapDown = current.high < Math.min(middle.open, middle.close);
     const currentClosesLow = current.close < (first.open + first.close) / 2;
 
-    // Relaxed gap requirement - either gap up or gap down, or just small middle and closes low
     return firstBullish && currentBearish && middleSmall && currentClosesLow;
   }
 
