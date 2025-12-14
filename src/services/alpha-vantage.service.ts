@@ -5,7 +5,7 @@
 
 import axios, { AxiosError } from 'axios';
 import { API_CONFIG } from '../config/api-config';
-import { AlphaVantageResponse, OHLCVData } from '../models/stock.model';
+import { AlphaVantageResponse, OHLCVData, TimeSeriesEntry, RSIEntry, ADXEntry, SMAEntry } from '../models/stock.model';
 
 export class AlphaVantageService {
   private apiKey: string;
@@ -97,7 +97,7 @@ export class AlphaVantageService {
 
     const ohlcvData: OHLCVData[] = [];
     for (const [date, values] of Object.entries(timeSeries)) {
-      const entry: any = values;
+      const entry = values as TimeSeriesEntry;
       ohlcvData.push({
         date,
         open: parseFloat(entry['1. open']),
@@ -131,7 +131,7 @@ export class AlphaVantageService {
 
     const rsiMap = new Map<string, number>();
     for (const [date, values] of Object.entries(technicalAnalysis)) {
-      const entry: any = values;
+      const entry = values as RSIEntry;
       rsiMap.set(date, parseFloat(entry['RSI']));
     }
 
@@ -156,7 +156,7 @@ export class AlphaVantageService {
 
     const adxMap = new Map<string, number>();
     for (const [date, values] of Object.entries(technicalAnalysis)) {
-      const entry: any = values;
+      const entry = values as ADXEntry;
       adxMap.set(date, parseFloat(entry['ADX']));
     }
 
@@ -182,7 +182,7 @@ export class AlphaVantageService {
 
     const smaMap = new Map<string, number>();
     for (const [date, values] of Object.entries(technicalAnalysis)) {
-      const entry: any = values;
+      const entry = values as SMAEntry;
       smaMap.set(date, parseFloat(entry['SMA']));
     }
 
